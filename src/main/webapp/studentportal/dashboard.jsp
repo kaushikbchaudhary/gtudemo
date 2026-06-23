@@ -643,14 +643,7 @@
                     <label>Exam</label>
                     <div class="inputs">
                         <select id="exam-select">
-                            <option value="sem6_reg">DIPL SEM 6 - Regular (MAY 2022)</option>
-                            <option value="sem5_reg">DIPL SEM 5 - Regular (DEC 2021)</option>
-                            <option value="sem4_reg">DIPL SEM 4 - Regular (MAY 2021)</option>
-                            <option value="sem3_rem">DIPL SEM 3 - Remedial (MAY 2021)</option>
-                            <option value="sem3_reg">DIPL SEM 3 - Regular (JAN 2021)</option>
-                            <option value="sem2_reg">DIPL SEM 2 - Regular (MAY 2020)</option>
-                            <option value="sem1_rem">DIPL SEM 1 - Remedial (DEC 2019)</option>
-                            <option value="sem1_reg">DIPL SEM 1 - Regular (DEC 2018)</option>
+                            <!-- Populated dynamically from database results -->
                         </select>
                         <button class="search-btn" onclick="renderResult()">Search</button>
                     </div>
@@ -712,6 +705,18 @@
 
         // UI View Toggles
         document.addEventListener('DOMContentLoaded', () => {
+            // Dynamically populate exam select options
+            const select = document.getElementById('exam-select');
+            if (select) {
+                select.innerHTML = '';
+                for (const key in resultDatabase) {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.innerText = resultDatabase[key].name;
+                    select.appendChild(opt);
+                }
+            }
+
             const navItems = document.querySelectorAll('.nav-menu li');
             
             navItems.forEach(item => {
@@ -778,6 +783,19 @@
         // Search engine logic for results
         function renderResult() {
             const selectVal = document.getElementById('exam-select').value;
+            if (!selectVal || !resultDatabase[selectVal]) {
+                document.getElementById('lbl-declared').innerText = "-";
+                document.getElementById('lbl-exam').innerText = "No results available";
+                document.getElementById('results-tbody').innerHTML = '<tr><td colspan="10" style="text-align: center;">No results found.</td></tr>';
+                document.getElementById('lbl-sem-backlog').innerText = "Current Sem. Backlog: -";
+                document.getElementById('lbl-tot-backlog').innerText = "Total Backlog: -";
+                document.getElementById('lbl-spi').innerText = "SPI: -";
+                document.getElementById('lbl-cpi-cgpa').innerHTML = "CPI: -";
+                const banner = document.getElementById('status-banner');
+                banner.innerText = "No results found.";
+                banner.className = 'status-banner status-fail';
+                return;
+            }
             const data = resultDatabase[selectVal]; 
 
             document.getElementById('lbl-declared').innerText = data.declared;
