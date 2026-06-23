@@ -161,4 +161,89 @@ public class StudentDAO {
             return false;
         }
     }
+
+    /**
+     * Fetch exam results for a student and format it as a JSON string matching the original JS layout.
+     */
+    public String getStudentResultsJson(String enrollmentNo) {
+        StringBuilder json = new StringBuilder();
+        json.append("{\n");
+
+        String resultsSql = "SELECT * FROM exam_results WHERE enrollment_no = ? ORDER BY id DESC";
+        String subjectsSql = "SELECT * FROM exam_subjects WHERE exam_result_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement psResults = conn.prepareStatement(resultsSql)) {
+
+            psResults.setString(1, enrollmentNo);
+            try (ResultSet rsResults = psResults.executeQuery()) {
+                boolean firstResult = true;
+
+                while (rsResults.next()) {
+                    if (!firstResult) {
+                        json.append(",\n");
+                    }
+                    firstResult = false;
+
+                    int resultId = rsResults.getInt("id");
+                    String examKey = rsResults.getString("exam_key");
+                    String declaredDate = rsResults.getString("declared_date");
+                    String examName = rsResults.getString("exam_name");
+                    String semBacklog = rsResults.getString("sem_backlog");
+                    String totBacklog = rsResults.getString("tot_backlog");
+                    String spi = rsResults.getString("spi");
+                    String cpi = rsResults.getString("cpi");
+                    String cgpa = rsResults.getString("cgpa");
+                    String examStatus = rsResults.getString("exam_status");
+                    boolean passed = rsResults.getBoolean("passed");
+
+                    json.append("  \"").append(examKey).append("\": {\n");
+                    json.append("    \"declared\": \"").append(declaredDate).append("\",\n");
+                    json.append("    \"name\": \"").append(examName).append("\",\n");
+                    json.append("    \"subjects\": [\n");
+
+                    try (PreparedStatement psSubjects = conn.prepareStatement(subjectsSql)) {
+                        psSubjects.setInt(1, resultId);
+                        try (ResultSet rsSubjects = psSubjects.executeQuery()) {
+                            boolean firstSubject = true;
+                            while (rsSubjects.next()) {
+                                if (!firstSubject) {
+                                    json.append(",\n");
+                                }
+                                firstSubject = false;
+
+                                json.append("      {")
+                                    .append("\"c\": \"").append(rsSubjects.getString("subject_code")).append("\", ")
+                                    .append("\"n\": \"").append(rsSubjects.getString("subject_name")).append("\", ")
+                                    .append("\"eA\": \"").append(rsSubjects.getString("ese_ab")).append("\", ")
+                                    .append("\"te\": \"").append(rsSubjects.getString("theory_ese")).append("\", ")
+                                    .append("\"tp\": \"").append(rsSubjects.getString("theory_pa")).append("\", ")
+                                    .append("\"tt\": \"").append(rsSubjects.getString("theory_total")).append("\", ")
+                                    .append("\"pe\": \"").append(rsSubjects.getString("practical_ese")).append("\", ")
+                                    .append("\"pp\": \"").append(rsSubjects.getString("practical_pa")).append("\", ")
+                                    .append("\"pt\": \"").append(rsSubjects.getString("practical_total")).append("\", ")
+                                    .append("\"sg\": \"").append(rsSubjects.getString("subject_grade")).append("\"")
+                                    .append("}");
+                            }
+                        }
+                    }
+
+                    json.append("\n    ],\n");
+                    json.append("    \"semB\": \"").append(semBacklog).append("\",\n");
+                    json.append("    \"totB\": \"").append(totBacklog).append("\",\n");
+                    json.append("    \"spi\": \"").append(spi).append("\",\n");
+                    json.append("    \"cpi\": \"").append(cpi).append("\",\n");
+                    json.append("    \"cgpa\": \"").append(cgpa).append("\",\n");
+                    json.append("    \"status\": \"").append(examStatus).append("\",\n");
+                    json.append("    \"passed\": ").append(passed).append("\n");
+                    json.append("  }");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        json.append("\n}");
+        return json.toString();
+    }
 }
