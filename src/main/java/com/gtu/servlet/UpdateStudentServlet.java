@@ -105,6 +105,18 @@ public class UpdateStudentServlet extends HttpServlet {
                     }
                 }
             }
+        } else if ("updateProfilePic".equals(action)) {
+            String profilePicBase64 = request.getParameter("profilePicBase64");
+            if (profilePicBase64 == null || profilePicBase64.trim().isEmpty()) {
+                message = "Profile picture data is missing.";
+            } else {
+                success = dao.updateProfilePic(enrollmentNo, profilePicBase64);
+                if (success) {
+                    message = "Profile picture updated successfully.";
+                } else {
+                    message = "Failed to update profile picture.";
+                }
+            }
         }
 
         if (success) {

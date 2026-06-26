@@ -115,6 +115,50 @@
             border-bottom: 1px solid #555;
         }
 
+        .profile-avatar-container {
+            position: relative;
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 8px auto;
+        }
+
+        .profile-avatar-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: block;
+        }
+
+        .profile-pic-edit-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            border: 1px solid #ccc;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+
+        .profile-pic-edit-badge:hover {
+            background-color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .profile-pic-edit-badge:hover i {
+            color: white;
+        }
+
         .profile-avatar-initial {
             width: 65px;
             height: 65px;
@@ -124,7 +168,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 8px auto;
             font-size: 1.8rem;
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -384,8 +427,18 @@
         
         <aside class="sidebar">
             <div class="profile-section">
-                <div class="profile-avatar-initial">
-                    <%= student.getFullName() != null && !student.getFullName().trim().isEmpty() ? student.getFullName().trim().substring(0, 1).toUpperCase() : "S" %>
+                <div class="profile-avatar-container">
+                    <% if (student.getProfilePic() != null && !student.getProfilePic().trim().isEmpty()) { %>
+                        <img src="<%= student.getProfilePic() %>" class="profile-avatar-img" alt="Profile Picture">
+                    <% } else { %>
+                        <div class="profile-avatar-initial">
+                            <%= student.getFullName() != null && !student.getFullName().trim().isEmpty() ? student.getFullName().trim().substring(0, 1).toUpperCase() : "S" %>
+                        </div>
+                    <% } %>
+                    <label for="profile-pic-input" class="profile-pic-edit-badge" title="Change Profile Picture">
+                        <i class="fas fa-camera" style="font-size: 11px; color: #555;"></i>
+                    </label>
+                    <input type="file" id="profile-pic-input" style="display: none;" accept="image/*" onchange="uploadProfilePic(this)">
                 </div>
                 <div class="enrollment"><%= student.getEnrollmentNo() %></div>
                 <div class="student-name"><%= student.getFullName() %></div>
@@ -824,6 +877,33 @@
             banner.innerText = data.status;
             banner.className = data.passed ? 'status-banner status-pass' : 'status-banner status-fail';
         }
+
+        function uploadProfilePic(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 200;
+                        canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 200, 200);
+                        
+                        const dataURL = canvas.toDataURL('image/jpeg', 0.85);
+                        document.getElementById('profilePicBase64Input').value = dataURL;
+                        document.getElementById('profilePicForm').submit();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
+    <form id="profilePicForm" action="../UpdateStudentServlet" method="post" style="display: none;">
+        <input type="hidden" name="action" value="updateProfilePic">
+        <input type="hidden" id="profilePicBase64Input" name="profilePicBase64">
+    </form>
 </body>
 </html>

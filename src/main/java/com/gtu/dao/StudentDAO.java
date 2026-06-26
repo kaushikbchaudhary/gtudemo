@@ -85,7 +85,8 @@ public class StudentDAO {
             rs.getString("parent_mobile"),
             rs.getString("parent_email"),
             rs.getString("account_detail"),
-            rs.getString("address")
+            rs.getString("address"),
+            rs.getString("profile_pic")
         );
     }
 
@@ -154,6 +155,22 @@ public class StudentDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, newPassword);
+            ps.setString(2, enrollmentNo);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Updates student profile picture.
+     */
+    public boolean updateProfilePic(String enrollmentNo, String profilePicBase64) {
+        String sql = "UPDATE students SET profile_pic = ? WHERE enrollment_no = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, profilePicBase64);
             ps.setString(2, enrollmentNo);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

@@ -22,6 +22,7 @@ public class Student {
     private String parentEmail;
     private String accountDetail;
     private String address;
+    private String profilePic;
 
     // Default constructor
     public Student() {}
@@ -54,7 +55,7 @@ public class Student {
                    String program, String collegeName, int currentSemester,
                    String admissionYear, double cgpa, int backlogs, String category,
                    String abcId, String aadhaarNo, String parentMobile, String parentEmail,
-                   String accountDetail, String address) {
+                   String accountDetail, String address, String profilePic) {
         this(id, enrollmentNo, fullName, email, mobile, dob, gender, branch, program,
              collegeName, currentSemester, admissionYear, cgpa, backlogs, category);
         this.abcId = abcId;
@@ -63,6 +64,7 @@ public class Student {
         this.parentEmail = parentEmail;
         this.accountDetail = accountDetail;
         this.address = address;
+        this.profilePic = profilePic;
     }
 
     // Getters
@@ -87,6 +89,7 @@ public class Student {
     public String getParentEmail() { return parentEmail; }
     public String getAccountDetail() { return accountDetail; }
     public String getAddress() { return address; }
+    public String getProfilePic() { return profilePic; }
 
     // Setters
     public void setId(int id) { this.id = id; }
@@ -110,4 +113,5 @@ public class Student {
     public void setParentEmail(String parentEmail) { this.parentEmail = parentEmail; }
     public void setAccountDetail(String accountDetail) { this.accountDetail = accountDetail; }
     public void setAddress(String address) { this.address = address; }
+    public void setProfilePic(String profilePic) { this.profilePic = profilePic; }
 }

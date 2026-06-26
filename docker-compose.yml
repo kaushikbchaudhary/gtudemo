@@ -11,6 +11,7 @@ services:
       MYSQL_DATABASE: gtu_student_db
     volumes:
       - ./db/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - mysql-data:/var/lib/mysql
     restart: unless-stopped
 
   web:
@@ -25,3 +26,6 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+
+volumes:
+  mysql-data:

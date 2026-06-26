@@ -22,7 +22,11 @@
   </div>
   <div class="dash-nav-right">
     <div class="dash-user-info">
-      <i class="fas fa-user-circle dash-avatar"></i>
+      <% if (student.getProfilePic() != null && !student.getProfilePic().trim().isEmpty()) { %>
+        <img src="<%= student.getProfilePic() %>" class="dash-avatar" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 5px;">
+      <% } else { %>
+        <i class="fas fa-user-circle dash-avatar"></i>
+      <% } %>
       <div>
         <span class="dash-username"><%= student.getFullName() %></span>
         <span class="dash-enrollment"><%= student.getEnrollmentNo() %></span>
@@ -35,7 +39,11 @@
 <div class="dash-layout">
   <aside class="dash-sidebar">
     <div class="sidebar-avatar-wrap">
-      <div class="sidebar-avatar"><i class="fas fa-user-circle"></i></div>
+      <% if (student.getProfilePic() != null && !student.getProfilePic().trim().isEmpty()) { %>
+        <img src="<%= student.getProfilePic() %>" style="width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #fff;">
+      <% } else { %>
+        <div class="sidebar-avatar"><i class="fas fa-user-circle"></i></div>
+      <% } %>
       <p class="sidebar-name"><%= student.getFullName() %></p>
       <p class="sidebar-branch"><%= student.getBranch() %></p>
       <p class="sidebar-sem">Semester <%= student.getCurrentSemester() %></p>
