@@ -25,5 +25,5 @@ sleep 15
 echo "============================================="
 echo " Setup Completed Successfully!"
 echo " Application is running."
-echo " Access URL: http://localhost:8080/GTUDemo/"
+echo " Access URL: http://localhost:8080/"
 echo "============================================="
